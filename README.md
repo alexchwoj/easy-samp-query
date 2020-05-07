@@ -5,3 +5,8 @@ Send queries to SA:MP servers easily, using Python.
 ```python
 SendQueryRequest(address, port, opcode)
 ```
+
+
+Donate (BTC)
+
+`1CMEPuTPtEKRRbPokRp9vTqoJNVNmm1GXt`
