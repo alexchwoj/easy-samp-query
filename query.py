@@ -1,42 +1,33 @@
 import socket
 
 def encode_bytes(*args):
-    ByteResult = b''
+    result = b''
     for arg in args:
         if isinstance(arg, bytes):
-            ByteResult += arg
+            result += arg
         elif isinstance(arg, str):
-            ByteResult += bytes(arg)
+            result += bytes(arg)
         elif isinstance(arg, int):
-            ByteResult += bytes([arg])
-    return ByteResult
+            result += bytes([arg])
+    return result
 
-def MakeQueryPayload(server_ip, server_port, opcode):
-    TargetAddress = encode_bytes(*[(int(n)) for n in server_ip.split('.')])
-    TargetPort = encode_bytes(int(server_port) & 0xFF, int(server_port) >> 8 & 0xFF)
+def send_query(ip_address, port = 7777, opcode = 'i', timeout = 3):
+    """Send query packet to server"""
+    ip_address = socket.gethostbyname(ip_address)
 
-    Payload = b'SAMP' \
-            + TargetAddress \
-            + TargetPort \
-            + opcode.encode() \
-            + b''
-    return Payload
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock.settimeout(timeout)
+    
+    sock.sendto(
+        b'SAMP' \
+        + encode_bytes(*[(int(n)) for n in ip_address.split('.')]) \
+        + encode_bytes(int(port) & 0xFF, int(port) >> 8 & 0xFF) \
+        + opcode.encode() \
+        + b'',
+        (ip_address, port)
+    )
 
-def SendQueryRequest(address, port, opcode):
-    try:
-        address = socket.gethostbyname(address)
-
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        sock.settimeout(1)
-
-        payload = MakeQueryPayload(address, port, opcode)
-        sock.sendto(payload, (address, int(port)))
-
-        data = sock.recv(4096)
-        response = data[11:]
-
-        sock.close()
-        return response
-
-    except socket.error:
-        return 0
+    data = sock.recv(4096)
+    sock.close()
+    
+    return data[11:]

@@ -1,12 +1,7 @@
 # easy-samp-query
-Send queries to SA:MP servers easily, using Python.
+Send queries to SA:MP servers.
 
 # Using
 ```python
-SendQueryRequest(address, port, opcode)
+send_query(ip_address, port = 7777, opcode = 'i', timeout = 3)
 ```
-
-
-Donate (BTC)
-
-`1CMEPuTPtEKRRbPokRp9vTqoJNVNmm1GXt`
